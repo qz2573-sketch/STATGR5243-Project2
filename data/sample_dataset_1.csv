@@ -1,0 +1,32 @@
+id,name,age,salary,department,join_date,is_manager,performance_score
+1,John Doe,28,50000,Sales,2020-01-15,False,3.5
+2,Jane Smith,34,65000,Marketing,2019-05-20,True,4.2
+3,Bob Johnson,45,80000,IT,2018-11-10,False,3.8
+4,Alice Brown,29,52000,Sales,2021-03-01,False,4.0
+5,Charlie Davis,31,58000,Marketing,2020-08-15,False,3.9
+6,Diana Evans,26,48000,IT,2022-06-01,False,3.2
+7,Evan Foster,38,72000,Sales,2017-02-28,True,4.5
+8,Fiona Green,33,60000,HR,2019-09-12,False,3.7
+9,George Harris,41,75000,IT,2016-12-05,True,4.1
+10,Hannah White,27,51000,HR,2021-11-20,False,3.6
+11,Ian Black,30,55000,Marketing,2020-04-10,False,3.8
+12,Julia Clark,35,68000,Sales,2018-07-25,False,4.3
+13,Kevin Lewis,29,53000,IT,2021-01-15,False,3.5
+14,Laura Scott,32,59000,HR,2019-10-30,False,3.9
+15,Mike Turner,40,78000,Marketing,2017-05-15,True,4.4
+16,Nina Adams,25,46000,Sales,2022-09-01,False,3.1
+17,Oscar Baker,36,69000,IT,2018-03-20,False,4.0
+18,Paula Carter,28,50000,HR,2020-12-10,False,3.4
+19,Quinn Davis,39,74000,Sales,2016-08-05,True,4.2
+20,Rachel Edwards,31,57000,Marketing,2019-11-25,False,3.7
+,,,,,
+21,Steve Frank,33,62000,IT,2019-02-14,False,3.9
+22,Tina Good,27,51000,HR,2021-06-30,False,3.6
+23,Uma Harris,34,66000,Sales,2018-10-15,False,4.1
+24,Victor Ivy,42,82000,Marketing,2015-04-20,True,4.6
+25,Wendy Jones,26,47000,IT,2022-08-10,False,3.3
+26,Xander King,37,71000,HR,2017-11-05,True,4.3
+27,Yara Lee,30,56000,Sales,2020-05-25,False,3.8
+28,Zack Miller,29,54000,Marketing,2021-02-18,False,3.5
+29,Amy Nelson,35,67000,IT,2018-09-10,False,4.0
+30,Brian Olson,32,60000,HR,2019-12-20,False,3.7
