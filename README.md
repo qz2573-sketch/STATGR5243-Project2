@@ -1,8 +1,3 @@
-# Data Explorer Pro
-
-A comprehensive Python for Shiny application for interactive data analysis, cleaning, feature engineering, and visualization.
-
-## Project Overview
 
 This project is a graduate-level web application built for STATGR5243. It provides a complete pipeline for data science tasks, allowing users to upload datasets (CSV, Excel, JSON, Parquet), clean and preprocess them, engineer new features, and perform exploratory data analysis (EDA) through an intuitive and responsive interface.
 
@@ -15,6 +10,25 @@ This project is a graduate-level web application built for STATGR5243. It provid
 - **Export**: Download the processed dataset.
 - **User Guide**: Built-in documentation for easy onboarding.
 
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/qz2573-sketch/STATGR5243-Project2.git
+   cd STATGR5243-Project2
+   ```
+
+2. Create a virtual environment (optional but recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
 ## Usage
 
 Run the application locally:
@@ -24,29 +38,6 @@ shiny run app.py
 ```
 
 Navigate to `http://localhost:8000` in your browser.
-
-## Deployment to shinyapps.io
-
-This application is ready for deployment on shinyapps.io.
-
-1. Install `rsconnect-python`:
-   ```bash
-   pip install rsconnect-python
-   ```
-
-2. Configure your shinyapps.io account:
-   ```bash
-   rsconnect add \
-       --account <YOUR_ACCOUNT_NAME> \
-       --name <YOUR_ACCOUNT_NAME> \
-       --token <YOUR_TOKEN> \
-       --secret <YOUR_SECRET>
-   ```
-
-3. Deploy the app:
-   ```bash
-   rsconnect deploy shiny . --name <YOUR_ACCOUNT_NAME> --title "Data-Explorer-Pro"
-   ```
 
 ## Project Structure
 
