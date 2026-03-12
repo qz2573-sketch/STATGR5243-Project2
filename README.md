@@ -15,25 +15,6 @@ This project is a graduate-level web application built for STATGR5243. It provid
 - **Export**: Download the processed dataset.
 - **User Guide**: Built-in documentation for easy onboarding.
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/qz2573-sketch/STATGR5243-Project2.git
-   cd STATGR5243-Project2
-   ```
-
-2. Create a virtual environment (optional but recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 ## Usage
 
 Run the application locally:
