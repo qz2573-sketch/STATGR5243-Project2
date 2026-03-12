@@ -15,7 +15,7 @@ def info_box(title: str, value: str, icon: str, bg_color: str = "bg-light"):
     """
     return ui.div(
         ui.div(
-            fa.icon_svg(icon, class_="fa-2x opacity-50"),
+            ui.span(fa.icon_svg(icon), class_="fa-2x opacity-50"),
             class_="d-flex align-items-center justify-content-center p-3"
         ),
         ui.div(

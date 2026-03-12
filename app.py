@@ -21,6 +21,17 @@ import faicons as fa
 
 # --- UI Definitions ---
 
+custom_css = """
+.shiny-file-input-progress {
+    animation: fadeOut 3s forwards;
+    animation-delay: 2s;
+}
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+}
+"""
+
 # User Guide Tab
 user_guide_tab = ui.nav_panel(
     "User Guide",
@@ -256,6 +267,7 @@ export_tab = ui.nav_panel(
 )
 
 app_ui = ui.page_navbar(
+    ui.head_content(ui.tags.style(custom_css)),
     user_guide_tab,
     data_upload_tab,
     cleaning_tab,
@@ -335,7 +347,7 @@ def server(input, output, session):
         info = get_dataset_info(df)
         return ui.layout_column_wrap(
             info_box("Rows", str(info["rows"]), "table-list"),
-            info_box("Columns", str(info["cols"]), "columns"),
+            info_box("Columns", str(info["cols"]), "table-columns"),
             info_box("Missing Values", str(sum(info["missing_values"].values())), "triangle-exclamation", "bg-warning-subtle" if sum(info["missing_values"].values()) > 0 else "bg-light"),
             info_box("Duplicates", str(info["duplicates"]), "copy", "bg-danger-subtle" if info["duplicates"] > 0 else "bg-light"),
             width=1/4
@@ -344,17 +356,26 @@ def server(input, output, session):
     @output
     @render.data_frame
     def data_preview():
-        return render.DataGrid(current_df())
+        df = current_df()
+        if df is None:
+            return render.DataGrid(pd.DataFrame())
+        return render.DataGrid(df)
 
     @output
     @render.data_frame
     def cleaning_preview():
-        return render.DataGrid(current_df())
+        df = current_df()
+        if df is None:
+            return render.DataGrid(pd.DataFrame())
+        return render.DataGrid(df)
     
     @output
     @render.data_frame
     def fe_preview():
-        return render.DataGrid(current_df())
+        df = current_df()
+        if df is None:
+            return render.DataGrid(pd.DataFrame())
+        return render.DataGrid(df)
 
     @output
     @render.text
@@ -549,7 +570,7 @@ def server(input, output, session):
     @render.data_frame
     def eda_summary():
         df = current_df()
-        if df is None: return None
+        if df is None: return render.DataGrid(pd.DataFrame())
         
         # If numeric column selected in X, show stats. If categorical, show counts.
         # But simpler to just show stats for whole DF or specific selection logic.

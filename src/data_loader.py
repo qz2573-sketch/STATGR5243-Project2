@@ -1,3 +1,4 @@
+import io
 import pandas as pd
 from pathlib import Path
 from typing import Optional, Tuple
@@ -55,7 +56,7 @@ def get_dataset_info(df: pd.DataFrame) -> dict:
     """
     Returns summary information about the dataframe.
     """
-    buffer = []
+    buffer = io.StringIO()
     df.info(buf=buffer)
     
     return {

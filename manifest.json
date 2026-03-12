@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "locale": "Chinese (Simplified)_China.936",
+  "metadata": {
+    "appmode": "python-shiny",
+    "entrypoint": "app"
+  },
+  "python": {
+    "version": "3.12.0",
+    "package_manager": {
+      "name": "pip",
+      "version": "26.0.1",
+      "package_file": "requirements.txt"
+    }
+  },
+  "files": {
+    "requirements.txt": {
+      "checksum": "35f0a6621d4e924e4fed5c944170bb4c"
+    },
+    ".gitignore": {
+      "checksum": "e05697e1722af406ff231db0bb4a413f"
+    },
+    "README.md": {
+      "checksum": "7517094f95d8ca5a8a96222ef21aa969"
+    },
+    "app.py": {
+      "checksum": "f442102cfebbda1687c6497cc403ed43"
+    },
+    "data/sample_dataset_1.csv": {
+      "checksum": "efeafcb972db7bc9c75d779db4337d1c"
+    },
+    "data/sample_dataset_2.csv": {
+      "checksum": "43d53cabaec23b9bb46a644c9dccb07d"
+    },
+    "report/project_report.md": {
+      "checksum": "86264330d8b8c51997526d867a5abcaa"
+    },
+    "src/__init__.py": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "src/__pycache__/__init__.cpython-314.pyc": {
+      "checksum": "d2b69facad1e5ddd53b58a523e04d0d9"
+    },
+    "src/__pycache__/data_loader.cpython-314.pyc": {
+      "checksum": "c8cfce3af4d89cc4cb712a3a8d8254c8"
+    },
+    "src/__pycache__/eda.cpython-314.pyc": {
+      "checksum": "4e8c08530f99f3114c15da98abde5ab3"
+    },
+    "src/__pycache__/feature_engineering.cpython-314.pyc": {
+      "checksum": "2f2b36a8d5d42810925331c397647f93"
+    },
+    "src/__pycache__/preprocessing.cpython-314.pyc": {
+      "checksum": "d723acb1a72c584ef45b4f81cfca6a73"
+    },
+    "src/__pycache__/ui_helpers.cpython-314.pyc": {
+      "checksum": "5f4c6841da554119a8a51e0936ef51c9"
+    },
+    "src/__pycache__/utils.cpython-314.pyc": {
+      "checksum": "f03982ac7ff6a4b0fc858b15c2c6fc89"
+    },
+    "src/data_loader.py": {
+      "checksum": "890afcb01e3a8f78979cb5a901066fee"
+    },
+    "src/eda.py": {
+      "checksum": "3391174183fe85540a42679231b14b89"
+    },
+    "src/feature_engineering.py": {
+      "checksum": "18870415adf5e6256561e0997e8d6af7"
+    },
+    "src/preprocessing.py": {
+      "checksum": "c4fa0008a07b6c259d428f2a6ba3369f"
+    },
+    "src/ui_helpers.py": {
+      "checksum": "2537e886495b3ccc86a4ff85796e62bc"
+    },
+    "src/utils.py": {
+      "checksum": "b6260d77ef1cffd0dad169cfe65b2ad1"
+    }
+  }
+}
