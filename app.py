@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from src.data_loader import load_dataset, get_dataset_info
+import plotly.graph_objects as go
 from src.preprocessing import (
     handle_missing_values, remove_duplicates, filter_outliers, 
     scale_features, encode_categorical, convert_dtypes
@@ -18,6 +19,7 @@ from src.eda import (
 from src.ui_helpers import card_header, info_box
 from shinywidgets import output_widget, render_widget
 import faicons as fa
+import pandas.api.types as ptypes
 
 # --- UI Definitions ---
 
@@ -273,6 +275,7 @@ eda_tab = ui.nav_panel(
     "EDA",
     ui.layout_sidebar(
         ui.sidebar(
+            # --- 1. graph settings ---
             ui.input_select("eda_plot_type", "Plot Type", 
                             {"histogram": "Histogram", "box": "Box Plot", 
                              "bar": "Bar Chart", "scatter": "Scatter Plot", 
@@ -292,7 +295,33 @@ eda_tab = ui.nav_panel(
             ),
             ui.panel_conditional(
                 "input.eda_plot_type == 'heatmap'",
-                ui.input_select("eda_heat_cols", "Columns", choices=[], multiple=True)
+                ui.input_select(
+                    "eda_heat_cols", 
+                    "Columns", 
+                    choices=[], 
+                    multiple=True, 
+                    selectize=True 
+                )
+            ),            
+            ui.hr(), 
+
+            # --- 2. Global Filters ---
+            ui.h6("📊 Global Filters"),
+            
+            ui.input_select("filter_num_col", "Numeric Filter", choices=["None"]),
+            ui.output_ui("dynamic_num_slider"), 
+            
+            ui.tags.br(),
+            
+            ui.input_select("filter_cat_col", "Category Filter", choices=["None"]),
+            ui.output_ui("dynamic_cat_selector"), 
+            
+            ui.hr(), 
+            
+            ui.input_action_button(
+                "run_eda", 
+                "Generate Plot", 
+                class_="btn-primary w-100", 
             ),
             width=300
         ),
@@ -310,7 +339,6 @@ eda_tab = ui.nav_panel(
     ),
     icon=fa.icon_svg("chart-line")
 )
-
 # Export Tab
 export_tab = ui.nav_panel(
     "Export",
@@ -463,7 +491,154 @@ def server(input, output, session):
         if not logs: return ui.p("No actions performed yet.", class_="text-muted")
         list_items = [ui.tags.li(log, class_="list-group-item") for log in reversed(logs)]
         return ui.tags.ul(*list_items, class_="list-group list-group-flush")
+
+#---EDA Trigger---
+
+    plot_trigger = reactive.Value(0)
+    @reactive.Effect
+    @reactive.event(input.run_eda)
+    def check_before_plotting():
+        df = filtered_df()
+        if df is None: return
+
+        is_large_data = len(df) > 50000
+        
+        is_huge_heatmap = (input.eda_plot_type() == 'heatmap') and (len(list(input.eda_heat_cols())) > 15)
+        
+        color_col = input.eda_color()
+        is_high_cardinality = False
+        unique_categories = 0
+        
+        if color_col != "None" and color_col in df.columns:
+            unique_categories = df[color_col].nunique()
+            if unique_categories > 20: 
+                is_high_cardinality = True
+
+        if is_large_data or is_huge_heatmap or is_high_cardinality:
+            
+            warning_msg = []
+            if is_large_data:
+                warning_msg.append(f"• Large dataset ({len(df)} rows).")
+            if is_huge_heatmap:
+                warning_msg.append("• Too many columns for a heatmap.")
+            if is_high_cardinality:
+                warning_msg.append(f"• The color column '{color_col}' has {unique_categories} unique values. This will generate too many categories/legends and may crash the browser.")
+
+            m = ui.modal(
+                ui.p("⚠️ Warning: Your current plot settings might cause performance issues:"),
+                ui.tags.ul([ui.tags.li(msg) for msg in warning_msg]), 
+                ui.p("Are you sure you want to proceed?"),
+                title="Performance & Logic Warning",
+                footer=ui.tags.div(
+                    ui.modal_button("Cancel", class_="btn-secondary"),
+                    ui.input_action_button("confirm_plot", "Force Plot", class_="btn-danger"),
+                    class_="d-flex gap-2"
+                ),
+                easy_close=True,
+            )
+            ui.modal_show(m)
+        else:
+            plot_trigger.set(plot_trigger.get() + 1)
+    @reactive.Effect
+    @reactive.event(input.confirm_plot)
+    def force_plot():
+        ui.modal_remove()
+        plot_trigger.set(plot_trigger.get() + 1)
+
+#---EDA filtering---
+
+    @reactive.Effect
+    def update_filter_cols():
+        df = current_df()
+        if df is not None:
+            num_cols = df.select_dtypes(include=np.number).columns.tolist()
+            ui.update_select("filter_num_col", choices=["None"] + num_cols)
+            
+            cat_cols = df.select_dtypes(include=['object', 'category', 'bool']).columns.tolist()
+            ui.update_select("filter_cat_col", choices=["None"] + cat_cols)
+    @output
+    @render.ui
+    def dynamic_num_slider():
+        df = current_df()
+        col = input.filter_num_col()
+        
+        if df is None or col == "None" or col not in df.columns:
+            return None
+        
+        min_val = float(df[col].min())
+        max_val = float(df[col].max())
+        
+        is_int = pd.api.types.is_integer_dtype(df[col])
+        step_val = 1 if is_int else (max_val - min_val) / 100
+        
+        return ui.TagList(
+            ui.input_slider(
+                "num_slider_range", 
+                f"Range for {col}", 
+                min=min_val, max=max_val, value=[min_val, max_val], step=step_val
+            ),
+            ui.layout_columns(
+                ui.input_numeric("num_filter_min", "Exact Min", value=min_val),
+                ui.input_numeric("num_filter_max", "Exact Max", value=max_val)
+            )
+        )
+    @reactive.Effect
+    @reactive.event(input.num_slider_range)
+    def sync_slider_to_box():
+        vals = input.num_slider_range()
+        if vals:
+            ui.update_numeric("num_filter_min", value=vals[0])
+            ui.update_numeric("num_filter_max", value=vals[1])
+
+    @reactive.Effect
+    @reactive.event(input.num_filter_min, input.num_filter_max)
+    def sync_box_to_slider():
+        min_v = input.num_filter_min()
+        max_v = input.num_filter_max()
+        if min_v is not None and max_v is not None:
+            ui.update_slider("num_slider_range", value=[min_v, max_v])
     
+    @output
+    @render.ui
+    def dynamic_cat_selector():
+        df = current_df()
+        col = input.filter_cat_col()
+        
+        if df is None or col == "None" or col not in df.columns:
+            return None
+        
+        unique_values = sorted(df[col].dropna().unique().tolist())
+        
+        return ui.input_selectize(
+            "cat_filter_values", 
+            f"Select values for {col}", 
+            choices=unique_values,
+            selected=None, 
+            multiple=True,
+            options={"plugins": ["remove_button"]} 
+        )
+    @reactive.calc
+    def filtered_df():
+        df = current_df()
+        if df is None: return None
+        
+        num_col = input.filter_num_col()
+        if num_col != "None" and num_col in df.columns:
+            min_v = input.num_filter_min()
+            max_v = input.num_filter_max()
+            if min_v is not None and max_v is not None:
+                df = df[(df[num_col] >= min_v) & (df[num_col] <= max_v)]
+        
+        cat_col = input.filter_cat_col()
+        if cat_col != "None" and cat_col in df.columns:
+            selected_cats = input.cat_filter_values()
+            if selected_cats:
+                df = df[df[cat_col].isin(selected_cats)]
+            else:
+                return df.iloc[0:0] 
+                
+        return df
+
    # --- Data Loading ---
     @reactive.Effect
     @reactive.event(input.file_upload)
@@ -897,38 +1072,87 @@ def server(input, output, session):
 
     @output
     @render_widget
+    @reactive.event(plot_trigger)
     def eda_plot():
-        df = current_df()
-        if df is None: return None
+        if plot_trigger.get() == 0:
+            return go.Figure()
+
+        df = filtered_df()
+        if df is None or len(df) == 0:
+            ui.notification_show("No data left after filtering!", type="warning")
+            return go.Figure()
         
+        # --- 1. get input ---
         plot_type = input.eda_plot_type()
+        x_col = input.eda_x()
+        y_col = input.eda_y()
         color = input.eda_color()
         if color == "None": color = None
+        heat_cols = list(input.eda_heat_cols()) 
+        # --- 2. Pre-check ---
         
-        if plot_type == "histogram":
-            return plot_histogram(df, input.eda_x(), color=color)
-        elif plot_type == "box":
-            return plot_box(df, input.eda_y(), input.eda_x(), color)
-        elif plot_type == "bar":
-            return plot_bar(df, input.eda_x(), input.eda_y(), color, input.eda_agg())
-        elif plot_type == "scatter":
-            return plot_scatter(df, input.eda_x(), input.eda_y(), color)
-        elif plot_type == "heatmap":
-            cols = list(input.eda_heat_cols())
-            if not cols: return None
-            return plot_heatmap(df, cols)
-        return None
+        if plot_type in ["scatter", "box", "histogram"]:
+            # check X
+            if not pd.api.types.is_numeric_dtype(df[x_col]):
+                ui.notification_show(f"Error: X-Axis ({x_col}) must be numeric for {plot_type}!", type="error", duration=5)
+                return go.Figure()
+            
+            # check Y
+            if plot_type == "scatter" and not pd.api.types.is_numeric_dtype(df[y_col]):
+                ui.notification_show(f"Error: Y-Axis ({y_col}) must be numeric for Scatter Plot!", type="error", duration=5)
+                return go.Figure()
 
+        # for Heatmap
+        if plot_type == "heatmap":
+            if not heat_cols or len(heat_cols) < 2:
+                ui.notification_show("Error: Please select at least 2 columns for Heatmap!", type="error")
+                return go.Figure()
+            
+            # Numeric check
+            non_num = [c for c in heat_cols if not pd.api.types.is_numeric_dtype(df[c])]
+            if non_num:
+                ui.notification_show(f"Error: Heatmap only works with numeric columns. Please remove: {', '.join(non_num)}", type="error")
+                return go.Figure()
+
+        # --- 3. graph logic---
+        try:
+            if plot_type == "histogram":
+                return plot_histogram(df, x_col, color=color)
+            
+            elif plot_type == "box":
+                return plot_box(df, y_col, x_col, color)
+            
+            elif plot_type == "bar":
+                return plot_bar(df, x_col, y_col, color, input.eda_agg())
+            
+            elif plot_type == "scatter":
+                return plot_scatter(df, x_col, y_col, color)
+                
+            elif plot_type == "heatmap":
+                return plot_heatmap(df, heat_cols)
+            
+            return go.Figure()
+            
+        except Exception as e:
+            ui.notification_show(f"Plot execution error: {str(e)}", type="error", duration=8)
+            return go.Figure()   
+         
     @output
     @render.data_frame
+    @reactive.event(plot_trigger)
     def eda_summary():
-        df = current_df()
+        if plot_trigger.get() == 0:
+            return render.DataGrid(pd.DataFrame())
+
+        df = filtered_df() 
+        
         if df is None: return render.DataGrid(pd.DataFrame())
         
-        # If numeric column selected in X, show stats. If categorical, show counts.
-        # But simpler to just show stats for whole DF or specific selection logic.
-        # Let's show generic describe for now.
-        return render.DataGrid(get_summary_statistics(df))
+        try:
+            return render.DataGrid(get_summary_statistics(df))
+        except Exception as e:
+            ui.notification_show(f"Summary table error: {str(e)}", type="error", duration=8)
+            return render.DataGrid(df.head())
 
     # --- Export ---
 
