@@ -22,12 +22,239 @@ import faicons as fa
 # --- UI Definitions ---
 
 custom_css = """
+/* ── Base & Brand ── */
+:root {
+    --brand-primary:   #4f46e5;
+    --brand-secondary: #7c3aed;
+    --brand-accent:    #06b6d4;
+    --brand-success:   #10b981;
+    --brand-warning:   #f59e0b;
+    --brand-danger:    #ef4444;
+    --surface:         #f8fafc;
+    --card-bg:         #ffffff;
+    --text-primary:    #1e293b;
+    --text-muted:      #64748b;
+    --border:          #e2e8f0;
+    --shadow-sm:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+    --shadow-md:       0 4px 12px rgba(0,0,0,.10);
+    --radius:          10px;
+}
+
+body {
+    background: var(--surface);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Navbar ── */
+.navbar {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%) !important;
+    box-shadow: 0 2px 8px rgba(79,70,229,.35);
+    padding: 0 1.5rem;
+}
+.navbar-brand {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    letter-spacing: -.3px;
+}
+.navbar .nav-link {
+    color: rgba(255,255,255,.85) !important;
+    font-weight: 500;
+    padding: .75rem 1rem !important;
+    border-radius: 6px;
+    transition: background .2s, color .2s;
+}
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: #fff !important;
+    background: rgba(255,255,255,.15) !important;
+}
+
+/* ── Cards ── */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card-title {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* ── Sidebar ── */
+.bslib-sidebar-layout > .sidebar {
+    background: var(--card-bg) !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+    background: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    font-weight: 500;
+    border-radius: 7px !important;
+    transition: opacity .15s, transform .1s;
+}
+.btn-primary:hover  { opacity: .88; transform: translateY(-1px); }
+.btn-outline-primary {
+    color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    font-weight: 500;
+    border-radius: 7px !important;
+    transition: background .15s, color .15s;
+}
+.btn-outline-primary:hover {
+    background: var(--brand-primary) !important;
+    color: #fff !important;
+}
+.btn-warning  { border-radius: 7px !important; font-weight: 500; }
+.btn-danger   { border-radius: 7px !important; font-weight: 500; }
+.btn-success  {
+    background: var(--brand-success) !important;
+    border-color: var(--brand-success) !important;
+    font-weight: 500;
+    border-radius: 7px !important;
+    font-size: 1.05rem;
+    padding: .6rem 1.6rem !important;
+    transition: opacity .15s, transform .1s;
+}
+.btn-success:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ── Info Boxes ── */
+.info-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: box-shadow .2s;
+}
+.info-box:hover { box-shadow: var(--shadow-md); }
+.info-box-icon {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.info-box-icon.primary { background: rgba(79,70,229,.12); color: var(--brand-primary); }
+.info-box-icon.success { background: rgba(16,185,129,.12); color: var(--brand-success); }
+.info-box-icon.warning { background: rgba(245,158,11,.15); color: var(--brand-warning); }
+.info-box-icon.danger  { background: rgba(239,68,68,.12);  color: var(--brand-danger);  }
+.info-box-label { font-size: .78rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+.info-box-value { font-size: 1.6rem; font-weight: 700; color: var(--text-primary); line-height: 1.1; }
+
+/* ── Accordion ── */
+.accordion-button {
+    font-weight: 600 !important;
+    font-size: .88rem !important;
+    color: var(--text-primary) !important;
+    background: transparent !important;
+}
+.accordion-button:not(.collapsed) {
+    color: var(--brand-primary) !important;
+    box-shadow: none !important;
+}
+.accordion-item { border-color: var(--border) !important; }
+
+/* ── Form Controls ── */
+.form-control, .form-select {
+    border-radius: 7px !important;
+    border-color: var(--border) !important;
+    font-size: .88rem;
+    transition: border-color .2s, box-shadow .2s;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--brand-primary) !important;
+    box-shadow: 0 0 0 3px rgba(79,70,229,.15) !important;
+}
+label { font-size: .83rem; font-weight: 500; color: var(--text-muted); }
+
+/* ── Status / verbatim text ── */
+pre.shiny-text-output {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: .82rem;
+    color: var(--text-muted);
+    padding: .6rem 1rem;
+}
+
+/* ── User Guide ── */
+.guide-hero {
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+}
+.guide-hero h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: .4rem; }
+.guide-hero p  { opacity: .85; margin: 0; font-size: 1rem; }
+.guide-step-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+    margin-bottom: .75rem;
+    transition: box-shadow .2s;
+}
+.guide-step-card:hover { box-shadow: var(--shadow-md); }
+.guide-step-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+    color: #fff; font-weight: 700; font-size: .95rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.guide-step-title { font-weight: 600; font-size: .95rem; margin-bottom: .2rem; }
+.guide-step-desc  { font-size: .85rem; color: var(--text-muted); margin: 0; }
+
+/* ── Export page ── */
+.export-card {
+    max-width: 480px;
+    margin: 3rem auto;
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+}
+.export-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: #fff;
+}
+
+/* ── File upload drop zone ── */
+.shiny-input-container input[type=file] { border-radius: 7px; }
+
+/* ── Notification ── */
+.shiny-notification {
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-md) !important;
+    font-weight: 500;
+}
+
+/* ── Fade-out upload progress ── */
 .shiny-file-input-progress {
     animation: fadeOut 3s forwards;
     animation-delay: 2s;
 }
 @keyframes fadeOut {
-    0% { opacity: 1; }
+    0%   { opacity: 1; }
     100% { opacity: 0; visibility: hidden; }
 }
 """
@@ -36,33 +263,54 @@ custom_css = """
 user_guide_tab = ui.nav_panel(
     "User Guide",
     ui.div(
-        ui.h2("Welcome to Data Explorer Pro"),
-        ui.p("This application allows you to upload datasets, clean them, engineer features, and perform exploratory data analysis."),
-        ui.hr(),
-        ui.h4("How to use:"),
-        ui.accordion(
-            ui.accordion_panel(
-                "1. Data Upload",
-                "Upload a CSV, Excel, JSON, or Parquet file. You can also load sample datasets to test the app."
-            ),
-            ui.accordion_panel(
-                "2. Cleaning & Preprocessing",
-                "Handle missing values, remove duplicates, filter outliers, scale features, and encode categorical variables. Changes are applied immediately."
-            ),
-            ui.accordion_panel(
-                "3. Feature Engineering",
-                "Create new features using arithmetic operations, transformations, or datetime extraction. You can also drop unwanted columns."
-            ),
-            ui.accordion_panel(
-                "4. Exploratory Data Analysis (EDA)",
-                "Visualize your data using interactive plots (Histogram, Box Plot, Bar Chart, Scatter Plot, Heatmap) and view summary statistics."
-            ),
-            ui.accordion_panel(
-                "5. Export",
-                "Download your processed dataset as a CSV file."
-            )
+        ui.div(
+            ui.h2(fa.icon_svg("chart-line"), " Data Explorer Pro"),
+            ui.p("A complete, no-code pipeline for uploading, cleaning, engineering, and visualizing your data."),
+            class_="guide-hero"
         ),
-        class_="p-4"
+        ui.div(
+            ui.div(
+                ui.div("1", class_="guide-step-num"),
+                ui.div(
+                    ui.p("Data Upload", class_="guide-step-title"),
+                    ui.p("Upload CSV, Excel, JSON, or Parquet files — or load one of the built-in sample datasets to explore the app instantly.", class_="guide-step-desc"),
+                ),
+            class_="guide-step-card"),
+            ui.div(
+                ui.div("2", class_="guide-step-num"),
+                ui.div(
+                    ui.p("Cleaning & Preprocessing", class_="guide-step-title"),
+                    ui.p("Handle missing values, remove duplicates, filter outliers, scale numeric features, and encode categorical variables interactively.", class_="guide-step-desc"),
+                ),
+            class_="guide-step-card"),
+            ui.div(
+                ui.div("3", class_="guide-step-num"),
+                ui.div(
+                    ui.p("Feature Engineering", class_="guide-step-title"),
+                    ui.p("Create new columns via arithmetic operations, math transforms (log, sqrt, square), or extract components from datetime columns.", class_="guide-step-desc"),
+                ),
+            class_="guide-step-card"),
+            ui.div(
+                ui.div("4", class_="guide-step-num"),
+                ui.div(
+                    ui.p("Exploratory Data Analysis", class_="guide-step-title"),
+                    ui.p("Explore your data with interactive Plotly charts: Histogram, Box Plot, Bar Chart, Scatter Plot, and Correlation Heatmap.", class_="guide-step-desc"),
+                ),
+            class_="guide-step-card"),
+            ui.div(
+                ui.div("5", class_="guide-step-num"),
+                ui.div(
+                    ui.p("Export", class_="guide-step-title"),
+                    ui.p("Download your fully processed dataset as a CSV file at any point in the pipeline.", class_="guide-step-desc"),
+                ),
+            class_="guide-step-card"),
+        ),
+        ui.div(
+            ui.tags.b(fa.icon_svg("lightbulb"), " Tip"),
+            ui.tags.p("Changes are applied sequentially and persist across tabs. Use Reset Data in the Cleaning tab to start over.", style="margin:0; font-size:.85rem; color:var(--text-muted)"),
+            class_="alert alert-info mt-3", style="border-radius:var(--radius); border:none; background:rgba(79,70,229,.08);"
+        ),
+        class_="p-4", style="max-width:780px; margin:0 auto;"
     ),
     icon=fa.icon_svg("book")
 )
@@ -255,13 +503,25 @@ eda_tab = ui.nav_panel(
 export_tab = ui.nav_panel(
     "Export",
     ui.div(
-        ui.card(
-            card_header("Download Processed Data", "download"),
-            ui.p("Download the final dataset with all cleaning and feature engineering steps applied."),
-            ui.download_button("download_data", "Download CSV", class_="btn-success"),
-            class_="text-center p-5"
+        ui.div(
+            ui.div(
+                fa.icon_svg("file-arrow-down", width="32px"),
+                class_="export-icon"
+            ),
+            ui.h4("Download Processed Dataset", style="font-weight:700; margin-bottom:.5rem;"),
+            ui.p(
+                "All cleaning, preprocessing, and feature engineering steps are included.",
+                style="color:var(--text-muted); margin-bottom:1.75rem; font-size:.95rem;"
+            ),
+            ui.download_button("download_data", "Download as CSV", class_="btn-success"),
+            ui.hr(style="margin:1.5rem 0; border-color:var(--border);"),
+            ui.p(
+                fa.icon_svg("circle-info"), " The exported file reflects the current state of the data.",
+                style="font-size:.82rem; color:var(--text-muted); margin:0;"
+            ),
+            class_="export-card"
         ),
-        class_="d-flex justify-content-center align-items-center h-100"
+        style="display:flex; justify-content:center; align-items:flex-start; padding:2rem;"
     ),
     icon=fa.icon_svg("file-export")
 )
